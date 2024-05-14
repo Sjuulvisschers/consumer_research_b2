@@ -36,7 +36,7 @@ df <- df %>%
 
 ```
 
-After inspecting the data, we observe that some columns are process as a character variable, even thought they should be processed as a numeric value. We modify this in the code below. 
+After inspecting the data, we observe that the donation column is processed as a character variable, even thought it should be processed as a numeric value. We modify this in the code below. 
 
 ```{r}
 df <- df %>%
@@ -44,7 +44,7 @@ df <- df %>%
 
 ```
 
-After inspecting the data, we observe that some columns are process as a character variable, even thought they should be processed as a numeric value. We modify this in the code below.
+After cleaning the data, we will create new columns for our mediating variables ("control" and "self-representativeness"). We do this by taking the average of the columns that correspond with these mediating variables. Both variables are currently measured based on three different columns. We transform these columns in order to better interpret the result when doing our analyses. 
 
 ```{r}
 # Convert columns to numeric if they are not already
@@ -52,12 +52,19 @@ df <- df %>%
   mutate(
     control = as.numeric(control),
     shape_utilize = as.numeric(shape_utilize),
-    involvement = as.numeric(involvement)
+    involvement = as.numeric(involvement),
+    significant_self = as.numeric(significant_self),
+    values_self = as.numeric(values_self),
+    reflection_self = as.numeric(reflection_self)
   )
 
 # Calculate the mean of multiple columns
 df <- df %>%
   mutate(avg_control = rowMeans(select(., c(control, shape_utilize, involvement)), na.rm = TRUE))
+
+df <- df %>% 
+  mutate(avg_representativeness = rowMeans(select(., c(significant_self, values_self, reflection_self)), na.rm = TRUE)
+         )
 
 ```
 
