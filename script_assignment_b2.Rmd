@@ -7,9 +7,10 @@ date: "2024-05-14"
 First, we load the data into R. The columns have already been renamed while transforming the csv file. 
 ```{r}
 library(readr)
-df <- read_delim("data/CR24 Spring class survey raw data.csv", delim = ";")
+df <- read_delim("CR24 Spring class survey raw data.csv", delim = ";")
 ```
 We proceed by transforming the "money as time worked" donations to a value in euro's. In the csv file, the donation columns for all groups were called 'donation'. Sine R can't proceed multiple columns with the same name, these columns have been named "donation...9", "donation...16", "donation...23" and "donation...30". In our dataset, the columns "donation...9" and "donation...16" refer to the "money as time worked" conditions. In the code below, we transform these variables by multiplying them with the hourly wage of the respondents. By doing this, we create the donation value in euro's. 
+
 ```{r}
 library(dplyr)
 library(tidyverse)
@@ -19,7 +20,9 @@ df <- df %>%
 ```
 
 After transforming the "money as time worked" variable, we proceed by storing all the values for the different treatmens into the same column. Since the last column of the dataframe specifies the treatment, we can safely merge these columns since they represent the same measurements. The measurements vary based on the treatment of the respondent. 
+
 ```{r}
+
 library(tidyr)
 df <- df %>%
   unite(donation, donation...9, donation...16, donation...23, donation...30, na.rm = TRUE) %>%
@@ -30,16 +33,39 @@ df <- df %>%
   unite(shape_utilize, shape_utilize...14, shape_utilize...21, shape_utilize...28, shape_utilize...35, na.rm = TRUE) %>%
   unite(involvement, involvement...15, involvement...22, involvement...29, involvement...36, na.rm = TRUE)
 
+
 ```
 
 After inspecting the data, we observe that some columns are process as a character variable, even thought they should be processed as a numeric value. We modify this in the code below. 
+
 ```{r}
 df <- df %>%
   mutate(donation = as.numeric(donation))
 
 ```
 
+After inspecting the data, we observe that some columns are process as a character variable, even thought they should be processed as a numeric value. We modify this in the code below.
 
+```{r}
+# Convert columns to numeric if they are not already
+df <- df %>%
+  mutate(
+    control = as.numeric(control),
+    shape_utilize = as.numeric(shape_utilize),
+    involvement = as.numeric(involvement)
+  )
+
+# Calculate the mean of multiple columns
+df <- df %>%
+  mutate(avg_control = rowMeans(select(., c(control, shape_utilize, involvement)), na.rm = TRUE))
+
+```
+
+```{r}
+df <- df %>%
+  mutate(immediate_dummy = as.integer(grepl("immediate", condition)))
+
+```
 
 
 
