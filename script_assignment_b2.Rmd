@@ -1,29 +1,32 @@
 ---
-title: "assignment_b2"
+title: "Assignment_b2"
 output: html_document
 date: "2024-05-14"
 ---
-
-First, we load the data into R. The columns have already been renamed while transforming the csv file. 
+#setup of libraries and loading the data
+> First, we load the data into R. The columns have already been renamed while transforming the csv file. 
 ```{r}
 library(readr)
-df <- read_delim("CR24 Spring class survey raw data.csv", delim = ";")
-```
-We proceed by transforming the "money as time worked" donations to a value in euro's. In the csv file, the donation columns for all groups were called 'donation'. Sine R can't proceed multiple columns with the same name, these columns have been named "donation...9", "donation...16", "donation...23" and "donation...30". In our dataset, the columns "donation...9" and "donation...16" refer to the "money as time worked" conditions. In the code below, we transform these variables by multiplying them with the hourly wage of the respondents. By doing this, we create the donation value in euro's. 
-
-```{r}
 library(dplyr)
 library(tidyverse)
+library(tidyr)
+df <- read_delim("CR24 Spring class survey raw data.csv", delim = ";")
+```
+
+#transforming the data
+> We proceed by transforming the "money as time worked" donations to a value in euro's. In the csv file, the donation columns for all groups were called 'donation'. Sine R can't proceed multiple columns with the same name, these columns have been named "donation...9", "donation...16", "donation...23" and "donation...30". In our dataset, the columns "donation...9" and "donation...16" refer to the "money as time worked" conditions. In the code below, we transform these variables by multiplying them with the hourly wage of the respondents. By doing this, we create the donation value in euro's. 
+
+```{r}
+
 df <- df %>% 
   mutate(donation...9 = donation...9*hourly_wage,
          donation...16 = donation...16*hourly_wage)
 ```
 
-After transforming the "money as time worked" variable, we proceed by storing all the values for the different treatmens into the same column. Since the last column of the dataframe specifies the treatment, we can safely merge these columns since they represent the same measurements. The measurements vary based on the treatment of the respondent. 
+> After transforming the "money as time worked" variable, we proceed by storing all the values for the different treatmens into the same column. Since the last column of the dataframe specifies the treatment, we can safely merge these columns since they represent the same measurements. The measurements vary based on the treatment of the respondent. 
 
 ```{r}
 
-library(tidyr)
 df <- df %>%
   unite(donation, donation...9, donation...16, donation...23, donation...30, na.rm = TRUE) %>%
   unite(significant_self, 'significant _self...10', 'significant _self...17', 'significant _self...24', 'significant _self...31', na.rm = TRUE) %>%
@@ -36,7 +39,7 @@ df <- df %>%
 
 ```
 
-After inspecting the data, we observe that some columns are process as a character variable, even thought they should be processed as a numeric value. We modify this in the code below. 
+> After inspecting the data, we observe that some columns are process as a character variable, even thought they should be processed as a numeric value. We modify this in the code below. 
 
 ```{r}
 df <- df %>%
@@ -44,7 +47,7 @@ df <- df %>%
 
 ```
 
-After inspecting the data, we observe that some columns are process as a character variable, even thought they should be processed as a numeric value. We modify this in the code below.
+> After inspecting the data, we observe that some columns are process as a character variable, even thought they should be processed as a numeric value. We modify this in the code below.
 
 ```{r}
 # Convert columns to numeric if they are not already
@@ -61,7 +64,8 @@ df <- df %>%
 
 ```
 
-Next, we are making two dummy variables so we can analyze the time-framed donations seperately from the long versus short term framing. 
+#making the dummies for time and framing
+> Next, we are making two dummy variables so we can analyze the time-framed donations seperately from the long versus short term framing. 
 
 ```{r}
 df <- df %>%
@@ -72,5 +76,7 @@ df <- df %>%
 
 ```
 
+#deleting the outliers
+> How are we going to make the decision which outliers to delete?
 
 
