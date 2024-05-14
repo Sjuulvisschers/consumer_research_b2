@@ -42,11 +42,7 @@ df <- df %>%
 
 ```
 
-<<<<<<< HEAD
-After inspecting the data, we observe that the donation column is processed as a character variable, even thought it should be processed as a numeric value. We modify this in the code below. 
-=======
-> After inspecting the data, we observe that some columns are process as a character variable, even thought they should be processed as a numeric value. We modify this in the code below. 
->>>>>>> 0507765229355e3ec1d89aa6af1a3f0fb5294af5
+> After inspecting the data, we observe that the donation column is processed as a character variable, even though it should be processed as a numeric value. We modify this in the code below. 
 
 ```{r}
 df <- df %>%
@@ -54,11 +50,7 @@ df <- df %>%
 
 ```
 
-<<<<<<< HEAD
-After cleaning the data, we will create new columns for our mediating variables ("control" and "self-representativeness"). We do this by taking the average of the columns that correspond with these mediating variables. Both variables are currently measured based on three different columns. We transform these columns in order to better interpret the result when doing our analyses. 
-=======
-> After inspecting the data, we observe that some columns are process as a character variable, even thought they should be processed as a numeric value. We modify this in the code below.
->>>>>>> 0507765229355e3ec1d89aa6af1a3f0fb5294af5
+>After cleaning the data, we will create new columns for our mediating variables ("control" and "self-representativeness"). We do this by taking the average of the columns that correspond with these mediating variables. Both variables are currently measured based on three different columns. We transform these columns in order to better interpret the result when doing our analyses. 
 
 ```{r}
 # Convert columns to numeric if they are not already
@@ -76,14 +68,9 @@ df <- df %>%
 df <- df %>%
   mutate(avg_control = rowMeans(select(., c(control, shape_utilize, involvement)), na.rm = TRUE))
 
-<<<<<<< HEAD
+
 df <- df %>% 
-  mutate(avg_representativeness = rowMeans(select(., c(significant_self, values_self, reflection_self)), na.rm = TRUE)
-         )
-=======
-df <- df %>%
   mutate(avg_representativeness = rowMeans(select(., c(significant_self, values_self, reflection_self)), na.rm = TRUE))
->>>>>>> 0507765229355e3ec1d89aa6af1a3f0fb5294af5
 
 ```
 
