@@ -55,12 +55,18 @@ df <- df %>%
   mutate(
     control = as.numeric(control),
     shape_utilize = as.numeric(shape_utilize),
-    involvement = as.numeric(involvement)
+    involvement = as.numeric(involvement),
+    significant_self = as.numeric(significant_self),
+    values_self = as.numeric(values_self),
+    reflection_self = as.numeric(reflection_self)
   )
 
 # Calculate the mean of multiple columns
 df <- df %>%
   mutate(avg_control = rowMeans(select(., c(control, shape_utilize, involvement)), na.rm = TRUE))
+
+df <- df %>%
+  mutate(avg_representativeness = rowMeans(select(., c(significant_self, values_self, reflection_self)), na.rm = TRUE))
 
 ```
 
