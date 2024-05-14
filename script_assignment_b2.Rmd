@@ -1,0 +1,47 @@
+---
+title: "assignment_b2"
+output: html_document
+date: "2024-05-14"
+---
+
+First, we load the data into R. The columns have already been renamed while transforming the csv file. 
+```{r}
+library(readr)
+df <- read_delim("data/CR24 Spring class survey raw data.csv", delim = ";")
+```
+We proceed by transforming the "money as time worked" donations to a value in euro's. In the csv file, the donation columns for all groups were called 'donation'. Sine R can't proceed multiple columns with the same name, these columns have been named "donation...9", "donation...16", "donation...23" and "donation...30". In our dataset, the columns "donation...9" and "donation...16" refer to the "money as time worked" conditions. In the code below, we transform these variables by multiplying them with the hourly wage of the respondents. By doing this, we create the donation value in euro's. 
+```{r}
+library(dplyr)
+library(tidyverse)
+df <- df %>% 
+  mutate(donation...9 = donation...9*hourly_wage,
+         donation...16 = donation...16*hourly_wage)
+```
+
+After transforming the "money as time worked" variable, we proceed by storing all the values for the different treatmens into the same column. Since the last column of the dataframe specifies the treatment, we can safely merge these columns since they represent the same measurements. The measurements vary based on the treatment of the respondent. 
+```{r}
+library(tidyr)
+df <- df %>%
+  unite(donation, donation...9, donation...16, donation...23, donation...30, na.rm = TRUE) %>%
+  unite(significant_self, 'significant _self...10', 'significant _self...17', 'significant _self...24', 'significant _self...31', na.rm = TRUE) %>%
+  unite(values_self, values_self...11, values_self...18, values_self...25, values_self...32, na.rm = TRUE) %>%
+  unite(reflection_self, reflection_self...12, reflection_self...19, reflection_self...26, reflection_self...33, na.rm = TRUE) %>%
+  unite(control, control...13, control...20, control...27, control...34, na.rm = TRUE) %>%
+  unite(shape_utilize, shape_utilize...14, shape_utilize...21, shape_utilize...28, shape_utilize...35, na.rm = TRUE) %>%
+  unite(involvement, involvement...15, involvement...22, involvement...29, involvement...36, na.rm = TRUE)
+
+```
+
+After inspecting the data, we observe that some columns are process as a character variable, even thought they should be processed as a numeric value. We modify this in the code below. 
+```{r}
+df <- df %>%
+  mutate(donation = as.numeric(donation))
+
+```
+
+
+
+
+
+
+
