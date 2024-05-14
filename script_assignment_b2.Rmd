@@ -5,11 +5,13 @@ date: "2024-05-14"
 ---
 #setup of libraries and loading the data
 > First, we load the data into R. The columns have already been renamed while transforming the csv file. 
+
 ```{r}
 library(readr)
 library(dplyr)
 library(tidyverse)
 library(tidyr)
+library(ggplot2)
 df <- read_delim("CR24 Spring class survey raw data.csv", delim = ";")
 ```
 
@@ -84,5 +86,22 @@ df <- df %>%
 
 #deleting the outliers
 > How are we going to make the decision which outliers to delete?
+
+```{r}
+ggplot(data = df, aes(x = 1, y = hourly_wage)) +
+  geom_point() +
+  labs(x = NULL, y = "Hourly Wage") +  # No label for x-axis
+  theme_minimal()
+```
+
+> in the code snippet below, we delete all the rows with an hourly wage higher than 1000 euros. ## we have to ask if this is correct or if we need a statistical way to determine what the outliers are.
+
+
+```{r}
+
+df <- df %>%
+  filter(hourly_wage <= 1000)
+
+```
 
 
