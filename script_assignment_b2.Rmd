@@ -1,29 +1,35 @@
 ---
-title: "assignment_b2"
+title: "Assignment_b2"
 output: html_document
 date: "2024-05-14"
 ---
+#setup of libraries and loading the data
+> First, we load the data into R. The columns have already been renamed while transforming the csv file. 
 
-First, we load the data into R. The columns have already been renamed while transforming the csv file. 
 ```{r}
 library(readr)
-df <- read_delim("CR24 Spring class survey raw data.csv", delim = ";")
-```
-We proceed by transforming the "money as time worked" donations to a value in euro's. In the csv file, the donation columns for all groups were called 'donation'. Sine R can't proceed multiple columns with the same name, these columns have been named "donation...9", "donation...16", "donation...23" and "donation...30". In our dataset, the columns "donation...9" and "donation...16" refer to the "money as time worked" conditions. In the code below, we transform these variables by multiplying them with the hourly wage of the respondents. By doing this, we create the donation value in euro's. 
-
-```{r}
 library(dplyr)
 library(tidyverse)
+library(tidyr)
+library(ggplot2)
+df <- read_delim("CR24 Spring class survey raw data.csv", delim = ";", locale = locale(decimal_mark = ","))
+
+```
+
+#transforming the data
+> We proceed by transforming the "money as time worked" donations to a value in euro's. In the csv file, the donation columns for all groups were called 'donation'. Sine R can't proceed multiple columns with the same name, these columns have been named "donation...9", "donation...16", "donation...23" and "donation...30". In our dataset, the columns "donation...9" and "donation...16" refer to the "money as time worked" conditions. In the code below, we transform these variables by multiplying them with the hourly wage of the respondents. By doing this, we create the donation value in euro's. 
+
+```{r}
+
 df <- df %>% 
   mutate(donation...9 = donation...9*hourly_wage,
          donation...16 = donation...16*hourly_wage)
 ```
 
-After transforming the "money as time worked" variable, we proceed by storing all the values for the different treatmens into the same column. Since the last column of the dataframe specifies the treatment, we can safely merge these columns since they represent the same measurements. The measurements vary based on the treatment of the respondent. 
+> After transforming the "money as time worked" variable, we proceed by storing all the values for the different treatmens into the same column. Since the last column of the dataframe specifies the treatment, we can safely merge these columns since they represent the same measurements. The measurements vary based on the treatment of the respondent. 
 
 ```{r}
 
-library(tidyr)
 df <- df %>%
   unite(donation, donation...9, donation...16, donation...23, donation...30, na.rm = TRUE) %>%
   unite(significant_self, 'significant _self...10', 'significant _self...17', 'significant _self...24', 'significant _self...31', na.rm = TRUE) %>%
@@ -36,7 +42,11 @@ df <- df %>%
 
 ```
 
+<<<<<<< HEAD
 After inspecting the data, we observe that the donation column is processed as a character variable, even thought it should be processed as a numeric value. We modify this in the code below. 
+=======
+> After inspecting the data, we observe that some columns are process as a character variable, even thought they should be processed as a numeric value. We modify this in the code below. 
+>>>>>>> 0507765229355e3ec1d89aa6af1a3f0fb5294af5
 
 ```{r}
 df <- df %>%
@@ -44,7 +54,11 @@ df <- df %>%
 
 ```
 
+<<<<<<< HEAD
 After cleaning the data, we will create new columns for our mediating variables ("control" and "self-representativeness"). We do this by taking the average of the columns that correspond with these mediating variables. Both variables are currently measured based on three different columns. We transform these columns in order to better interpret the result when doing our analyses. 
+=======
+> After inspecting the data, we observe that some columns are process as a character variable, even thought they should be processed as a numeric value. We modify this in the code below.
+>>>>>>> 0507765229355e3ec1d89aa6af1a3f0fb5294af5
 
 ```{r}
 # Convert columns to numeric if they are not already
@@ -62,19 +76,39 @@ df <- df %>%
 df <- df %>%
   mutate(avg_control = rowMeans(select(., c(control, shape_utilize, involvement)), na.rm = TRUE))
 
+<<<<<<< HEAD
 df <- df %>% 
   mutate(avg_representativeness = rowMeans(select(., c(significant_self, values_self, reflection_self)), na.rm = TRUE)
          )
+=======
+df <- df %>%
+  mutate(avg_representativeness = rowMeans(select(., c(significant_self, values_self, reflection_self)), na.rm = TRUE))
+>>>>>>> 0507765229355e3ec1d89aa6af1a3f0fb5294af5
 
 ```
+
+#making the dummies for time and framing
+> Next, we are making two dummy variables so we can analyze the time-framed donations seperately from the long versus short term framing. 
 
 ```{r}
 df <- df %>%
-  mutate(immediate_dummy = as.integer(grepl("immediate", condition)))
+  mutate(immediate_dummy = as.integer(grepl("immediate", condition, ignore.case = TRUE)))
+
+df <- df %>%
+  mutate(timeframe_dummy = as.integer(grepl("time", condition, ignore.case = TRUE)))
 
 ```
 
+#deleting the outliers
+
+> in the code snippet below, we delete all the rows with an hourly wage higher than 1000 euros. ## we have to ask if this is correct or if we need a statistical way to determine what the outliers are.
 
 
+```{r}
+
+df <- df %>%
+  filter(hourly_wage <= 1000)
+
+```
 
 
