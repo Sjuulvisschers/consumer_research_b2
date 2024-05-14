@@ -5,12 +5,17 @@ date: "2024-05-14"
 ---
 #setup of libraries and loading the data
 > First, we load the data into R. The columns have already been renamed while transforming the csv file. 
+
 ```{r}
 library(readr)
 library(dplyr)
 library(tidyverse)
 library(tidyr)
-df <- read_delim("CR24 Spring class survey raw data.csv", delim = ";")
+library(ggplot2)
+library(readr)
+
+df <- read_delim("CR24 Spring class survey raw data.csv", delim = ";", locale = locale(decimal_mark = ","))
+
 ```
 
 #transforming the data
@@ -55,12 +60,18 @@ df <- df %>%
   mutate(
     control = as.numeric(control),
     shape_utilize = as.numeric(shape_utilize),
-    involvement = as.numeric(involvement)
+    involvement = as.numeric(involvement),
+    significant_self = as.numeric(significant_self),
+    values_self = as.numeric(values_self),
+    reflection_self = as.numeric(reflection_self)
   )
 
 # Calculate the mean of multiple columns
 df <- df %>%
   mutate(avg_control = rowMeans(select(., c(control, shape_utilize, involvement)), na.rm = TRUE))
+
+df <- df %>%
+  mutate(avg_representativeness = rowMeans(select(., c(significant_self, values_self, reflection_self)), na.rm = TRUE))
 
 ```
 
@@ -78,5 +89,14 @@ df <- df %>%
 
 #deleting the outliers
 > How are we going to make the decision which outliers to delete?
+> in the code snippet below, we delete all the rows with an hourly wage higher than 1000 euros. ## we have to ask if this is correct or if we need a statistical way to determine what the outliers are.
+
+
+```{r}
+
+df <- df %>%
+  filter(hourly_wage <= 1000)
+
+```
 
 
