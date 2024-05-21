@@ -12,6 +12,9 @@ library(dplyr)
 library(tidyverse)
 library(tidyr)
 library(ggplot2)
+library(psych)
+library(car)
+
 df <- read_delim("CR24 Spring class survey raw data.csv", delim = ";", locale = locale(decimal_mark = ","))
 
 ```
@@ -88,7 +91,7 @@ df <- df %>%
 
 #deleting the outliers
 
-> in the code snippet below, we delete all the rows with an hourly wage higher than 1000 euros. ## we have to ask if this is correct or if we need a statistical way to determine what the outliers are.
+> In the code snippet below, we delete all the rows with an hourly wage higher than 1000 euros. ## we have to ask if this is correct or if we need a statistical way to determine what the outliers are.
 
 
 ```{r}
@@ -97,5 +100,51 @@ df <- df %>%
   filter(hourly_wage <= 1000)
 
 ```
+
+> Now that we have cleaned the raw data, we start by checking if the randomization of the groups went well. We check for variables that are not influenced by the experiment. These variables are hourly wage, age and gender.
+
+```{r}
+lm_hourly_wage <- lm(hourly_wage ~ condition, df)
+summary(lm_hourly_wage)
+
+lm_age <- lm(age ~ condition, df)
+summary(lm_age)
+
+lm_gender <- lm(gender ~ condition, df)
+summary(lm_gender)
+```
+> For intepretation of the results, it is important to know that the MoneyAsTimeWorkedLongterm condition is taken as the baseline. For hourly_wage, we conclude that the p values are not significant and thus that there are no differences between the different conditions. For age, the MoneyLongterm respondents are on average 5 years older. For gender, we can see that there is a slight significant difference for the MoneyImmediate condition.
+
+> Next, we check the reliability of the scales used in the experiment by computing the cronbach's alpha of those measurement scales
+
+```{r}
+
+cronbach_variables <- c("significant_self", "values_self", "reflection_self", "control", "shape_utilize", "involvement", "trust")
+cronbach_data <- df[cronbach_variables]
+
+alpha <- alpha(cronbach_data)
+print(alpha)
+
+```
+> When checking the output, it is visibile that all of the measurement scales report a raw_alpha above 0.8. This means that the scales used in the experiment are reliable. 
+
+> We continue by checking assumptions before starting on our statistical analyses. First, we use the shapiro-wilk test to check if the results are normally distributed. 
+
+```{r}
+normality_results <- df %>%
+  group_by(condition) %>%
+  summarise(shapiro_test = list(shapiro.test(donation))) %>%
+  mutate(shapiro_p_value = map_dbl(shapiro_test, ~ .x$p.value))
+
+print(normality_results)
+```
+> All of the conditions report a significant p value regarding the normal distribution of the donations. This means that we reject the null-hypothesis, and thus meaning that the results are not normally distributed. 
+
+```{r}
+levene_test_result <- leveneTest(donation ~ condition, data = df)
+print(levene_test_result)
+
+```
+> If the p-value from Levene's test is less than your chosen significance level (e.g., 0.05), you reject the null hypothesis, suggesting evidence of heteroscedasticity. So in this case, with a p-value of 0.02308, we can conclude that there is no evidence of homoscedasticity.
 
 
